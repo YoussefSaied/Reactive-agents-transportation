@@ -6,11 +6,11 @@ import logist.topology.Topology.City;
 public class StateAction {
 
     private City currentCity;
-    private City destinationCity;
+    private City taskCity;
 
-    public StateAction(City givenCurrentCity, City givenDestinationCity) {
+    public StateAction(City givenCurrentCity, City taskCity) {
         this.currentCity = givenCurrentCity;
-        this.destinationCity = givenDestinationCity;
+        this.taskCity = taskCity;
     }
 
     public City getCurrentCity() {
@@ -21,12 +21,18 @@ public class StateAction {
         this.currentCity = currentCity;
     }
 
-    public City getDestinationCity() {
-        return destinationCity;
+    public City getTaskCity() {
+        return taskCity;
     }
 
-    public void setDestinationCity(City destinationCity) {
-        this.destinationCity = destinationCity;
+    public void setTaskCity(City taskCity) {
+        this.taskCity = taskCity;
+    }
+
+    @Override
+    public String toString() {
+        if (taskCity != null) return "Current city:    " + Integer.toString(currentCity.id) + "      task city: " + Integer.toString(taskCity.id);
+        return "Current city:    " + Integer.toString(currentCity.id);
     }
 
     @Override
@@ -34,7 +40,7 @@ public class StateAction {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((currentCity == null) ? 0 : currentCity.hashCode());
-        result = prime * result + ((destinationCity == null) ? 0 : destinationCity.hashCode());
+        result = prime * result + ((taskCity == null) ? 0 : taskCity.hashCode());
         return result;
     }
 
@@ -42,7 +48,7 @@ public class StateAction {
     public boolean equals(Object obj) {
         if (this == obj) return true;
 
-        if (obj == null) return false;
+//        if (obj == null) return false;
 
         if (getClass() != obj.getClass()) return false;
 
@@ -51,14 +57,14 @@ public class StateAction {
             if (other.currentCity != null) {
                 return false;
             }
-        } else if (!currentCity.equals(other.currentCity))
+        } else if (currentCity.id != other.currentCity.id) // (!currentCity.equals(other.currentCity))
             return false;
 
-        if (destinationCity == null) {
-            if (other.destinationCity != null) {
+        if (taskCity == null) {
+            if (other.taskCity != null) {
                 return false;
             }
-        } else if (!destinationCity.equals(other.destinationCity))
+        } else if (taskCity.id != other.taskCity.id) // (!taskCity.equals(other.taskCity))
             return false;
         return true;
     }
