@@ -1,16 +1,18 @@
 package template;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.List;
 
-import logist.simulation.Vehicle;
 import logist.agent.Agent;
 import logist.behavior.ReactiveBehavior;
 import logist.plan.Action;
 import logist.plan.Action.Move;
 import logist.plan.Action.Pickup;
+import logist.simulation.Vehicle;
 import logist.task.Task;
 import logist.task.TaskDistribution;
 import logist.topology.Topology;
@@ -19,75 +21,75 @@ import logist.topology.Topology.City;
 
 public class ReactiveTemplate implements ReactiveBehavior {
 
-	private Random random;
-	private double discount;
 	private int numActions;
 	private Agent myAgent;
-	// Change the value here.
+	private double discount;
+	private final String topology = "England";
 	private static final double INIT_VALUE = -999999;
 
+	// Store the required tables as hash maps for efficiency.
 	HashMap<StatePair,Double> probTransitionTable = new HashMap<StatePair,Double>();
 	HashMap<StateCityPair,Double> rewardTable = new HashMap<StateCityPair,Double>();
-	HashMap<StateAction, Double>  stateValues = new HashMap<StateAction, Double>();
-	HashMap<StateAction, City>  bestAction = new HashMap<StateAction, City>();
-	HashMap<StateCityPair, Double>  stateActionQvalues = new HashMap<StateCityPair, Double>();
-	List<StateAction> allStates = new ArrayList<StateAction>();
+	HashMap<State,Double> stateValues = new HashMap<State,Double>();
+	HashMap<State,City> bestAction = new HashMap<State,City>();
+	HashMap<StateCityPair,Double> stateActionQvalues = new HashMap<StateCityPair,Double>();
+
+	// List that will contain all the states.
+	List<State> allStates = new ArrayList<State>();
 
 	@Override
 	public void setup(Topology topology, TaskDistribution td, Agent agent) {
 
-		// Reads the discount factor from the agents.xml file.
-		// If the property is not present it defaults to 0.95
-		Double discount = agent.readProperty("discount-factor", Double.class,
-				0.95);
-
-
-		this.random = new Random();
-		this.discount = discount;
 		this.numActions = 0;
 		this.myAgent = agent;
 
-		//Populate the tables for he reinforcement learning algorithm
-		//Reads all cities from topology.
-		List<City> cities = topology.cities();
+		// Reads the discount factor from the agents.xml file.
+		// If the property is not present it defaults to 0.95
+		this.discount = agent.readProperty("discount-factor", Double.class, 0.95);
 		double reward = 0;
 
-		for(City currentCity: cities) {
-			//Case 1: no task
+		//Read all cities from topology.
+		List<City> cities = topology.cities();
+
+		//Populate the tables for he reinforcement learning algorithm.
+		for (City currentCity: cities) {
+
+			// Case 1: no task at the current city.
 			List<City> currentCityNeighbours = currentCity.neighbors();
-			StateAction noTaskCurrentState = new StateAction(currentCity, null);
+			State noTaskCurrentState = new State(currentCity, null);
 			allStates.add(noTaskCurrentState);
-			System.out.println(noTaskCurrentState);
 			stateValues.put(noTaskCurrentState, INIT_VALUE);
 
-			for(City neighbour: currentCityNeighbours) {
-				reward = 0 -currentCity.distanceTo(neighbour)*agent.vehicles().get(0).costPerKm() ;
+			for (City neighbour: currentCityNeighbours) {
+				reward = 0 - currentCity.distanceTo(neighbour)*agent.vehicles().get(0).costPerKm();
 				StateCityPair neighbourStateNoTaskStateCityPair = new StateCityPair(noTaskCurrentState, neighbour);
 				rewardTable.put(neighbourStateNoTaskStateCityPair, reward);
 
-				StateAction neighbourStateNoTask = new StateAction(neighbour, null);
+				State neighbourStateNoTask = new State(neighbour, null);
 				StatePair neighbourStateNoTaskStatePair = new StatePair(noTaskCurrentState, neighbourStateNoTask);
-				// No task at neighbour city.
+
+				// No task at neighbouring city.
 				probTransitionTable.put(neighbourStateNoTaskStatePair, td.probability(neighbour, neighbour));
 				stateValues.put(neighbourStateNoTask, INIT_VALUE);
 
 				for (City taskAtDestinationCity: cities) {
-					StateAction nextState = new StateAction(neighbour, taskAtDestinationCity);
+					State nextState = new State(neighbour, taskAtDestinationCity);
 					StatePair StatePair = new StatePair(noTaskCurrentState, nextState);
 					probTransitionTable.put(StatePair, td.probability(neighbour, taskAtDestinationCity));
 					stateValues.put(nextState, INIT_VALUE);
 
 				}
 			}
-			// Case 2: There is a task
-			for(City taskCity: cities) {
-				StateAction currentState = new StateAction(currentCity, taskCity);
 
-				// Case 2a: refuse task.
+			// Case 2: There is a task at the current city.
+			for (City taskCity: cities) {
+				State currentState = new State(currentCity, taskCity);
+
+				// Case 2a: refuse the task.
 				allStates.add(currentState);
-				for(City neighbour: currentCityNeighbours) {
+				for (City neighbour: currentCityNeighbours) {
 					if (!(neighbour.equals(taskCity))){
-						StateAction neighbourStateNoTask = new StateAction(neighbour, null);
+						State neighbourStateNoTask = new State(neighbour, null);
 						StatePair neighbourStateNoTaskStatePair = new StatePair(currentState, neighbourStateNoTask);
 						// No task at neighbour city.
 						probTransitionTable.put(neighbourStateNoTaskStatePair, td.probability(neighbour, null));
@@ -98,20 +100,20 @@ public class ReactiveTemplate implements ReactiveBehavior {
 						rewardTable.put(neighbourStateNoTaskStateCityPair, reward);
 
 						for (City taskAtDestinationCity: cities) {
-							StateAction nextState = new StateAction(neighbour, taskAtDestinationCity);
+							State nextState = new State(neighbour, taskAtDestinationCity);
 							StatePair StatePair = new StatePair(currentState, nextState);
 							probTransitionTable.put(StatePair, td.probability(neighbour, taskAtDestinationCity));
 							stateValues.put(nextState, INIT_VALUE);
 						}}
 				}
 
-				// Case 2b: accept task
-				reward = td.reward(currentCity, taskCity)  -currentCity.distanceTo(taskCity)*agent.vehicles().get(0).costPerKm() ;
+				// Case 2b: accept the task.
+				reward = td.reward(currentCity, taskCity) - currentCity.distanceTo(taskCity)*agent.vehicles().get(0).costPerKm();
 				StateCityPair taskStateStateCityPair = new StateCityPair(currentState, taskCity);
 				rewardTable.put(taskStateStateCityPair, reward);
 
 				for (City taskAtDestinationCity: cities) {
-					StateAction nextState = new StateAction(taskCity, taskAtDestinationCity);
+					State nextState = new State(taskCity, taskAtDestinationCity);
 					StatePair StatePair = new StatePair(currentState, nextState);
 					probTransitionTable.put(StatePair, td.probability(taskCity, taskAtDestinationCity));
 					allStates.add(nextState);
@@ -121,93 +123,142 @@ public class ReactiveTemplate implements ReactiveBehavior {
 			}
 
 		}
-		//		double cost = cityA.distanceTo(cityB)*agent.vehicles().get(0).costPerKm();
+
+		// Offline reinforcement learning algorithm that populates the required tables.
 		boolean keepLooping;
-		int steps = 0;
-		double eps = 0.0;
-		double maxE = 0;
+		double epsilon;
+		double maxEpsilon;
+
 		do {
-			maxE = 0;
-			steps++;
-			System.out.println(steps);
+			maxEpsilon = 0;
 			keepLooping = false;
-			double currentQValue;
-			for (StateAction state : allStates) {
+
+			double currentQValue = 0;
+
+			for (State state: allStates) {
 				City currentCity = state.getCurrentCity();
 				City taskCity = state.getTaskCity();
-				double maxQValue = -9999;
-				currentQValue = -9999;
+				double maxQValue = -999999;
 				City bestActionCurrentValue = taskCity;
 
-				//Accept the task
-				if (taskCity != null){
+				// Reject task or null.
+				List<City> currentCityNeighbours = currentCity.neighbors();
+				for (City neighbour: currentCityNeighbours) {
+					if (!(neighbour.equals(taskCity))) {
+						StateCityPair currentStateNeighbourCityPair = new StateCityPair(state, neighbour);
+						currentQValue = rewardTable.get(currentStateNeighbourCityPair);
+//						if(rewardTable.get(currentStateNeighbourCityPair) == null) System.out.println("OOOOFFFF");
+
+						for (City destinationCityForNeighbourCity : cities) {
+							State destinationState = new State(neighbour, destinationCityForNeighbourCity);
+							StatePair currentStatePair = new StatePair(state, destinationState);
+							currentQValue += discount * probTransitionTable.get(currentStatePair) * stateValues.get(destinationState);
+
+							if (currentQValue > maxQValue) {
+								maxQValue = currentQValue;
+								bestActionCurrentValue = neighbour;
+							}
+						}
+						stateActionQvalues.put(currentStateNeighbourCityPair, currentQValue);
+					}
+				}
+
+
+				// Accept the task.
+				if (taskCity != null) {
 					StateCityPair currentStateTaskCityPair = new StateCityPair(state, taskCity);
 					currentQValue = rewardTable.get(currentStateTaskCityPair);
 					for (City destinationCityForTaskCity : cities) {
-						StateAction destinationState = new StateAction(taskCity, destinationCityForTaskCity);
+						State destinationState = new State(taskCity, destinationCityForTaskCity);
 						StatePair currentStatePair = new StatePair(state, destinationState);
 						currentQValue += discount * probTransitionTable.get(currentStatePair) * stateValues.get(destinationState);
 					}
 					stateActionQvalues.put(currentStateTaskCityPair, currentQValue);
 				}
-				if (currentQValue> maxQValue) {
-					maxQValue= currentQValue;
-					bestActionCurrentValue = taskCity;}
+				if (currentQValue > maxQValue) {
+					maxQValue = currentQValue;
+					bestActionCurrentValue = taskCity;
+				}
 
+				if (stateValues.get(state) != 0 && (maxQValue > stateValues.get(state))) {
+					epsilon = Math.abs((maxQValue - stateValues.get(state))/stateValues.get(state));
+				} else {
+					epsilon = 0;
+				}
 
-				// Reject task or null
-				List<City> currentCityNeighbours = currentCity.neighbors();
-				for (City neighbour : currentCityNeighbours) {
-					if (!(neighbour.equals(taskCity))  ){
-						StateCityPair currentStateNeighbourCityPair = new StateCityPair(state, neighbour);
-						currentQValue = rewardTable.get(currentStateNeighbourCityPair);
-						for (City destinationCityForNeighbourCity : cities) {
-							StateAction destinationState = new StateAction(neighbour, destinationCityForNeighbourCity);
-							StatePair currentStatePair = new StatePair(state, destinationState);
-							currentQValue += discount * probTransitionTable.get(currentStatePair) * stateValues.get(destinationState);
-							if (currentQValue> maxQValue) {
-								maxQValue= currentQValue;
-								bestActionCurrentValue = neighbour;}
-						}
-						stateActionQvalues.put(currentStateNeighbourCityPair, currentQValue);
-				}}
-				if (stateValues.get(state) != 0 && (maxQValue>stateValues.get(state)) ) eps = Math.abs((maxQValue-stateValues.get(state))/stateValues.get(state));
-				else eps =0;
+				if (epsilon > maxEpsilon) {
+					maxEpsilon = epsilon;
+				}
 
-				double shit = stateValues.get(state);
+				if (epsilon > 0.001) {
+					keepLooping = true;
+				}
+				stateValues.put(state, maxQValue);
 
-				if (eps > maxE) maxE = eps;
-
-				if (eps > 0.001) keepLooping = true;
-				stateValues.put(state,maxQValue);
-				bestAction.put(state,bestActionCurrentValue);
-//				if (eps >0.1) System.out.println(state+ "  maxQValue " + maxQValue + "   shit:  " + shit );
-//				System.out.println("Steps: "+ steps + "      eps:" + eps + "   " + keepLooping + "  maxQValue " + maxQValue + "   shit:  " + shit);
+				if (bestActionCurrentValue != null) {
+					bestAction.put(state, bestActionCurrentValue);
+				}
 			}
-//			System.out.println("Steps: "+ steps + "      maxeps:" + maxE);
-		}while (keepLooping);
+		} while (keepLooping);
+
+		System.out.println(bestAction.keySet());
+	}
+
+	public void writeDataToCSV(String csvFile, int dataItem1, long dataItem2, double dataItem3) {
+		FileWriter writer;
+
+		try {
+			writer = new FileWriter(csvFile, true);
+
+			CSVWriter.writeLine(writer, Arrays.asList(
+					Integer.toString(dataItem1),
+					Long.toString(dataItem2),
+					Double.toString(dataItem3)
+					)
+			);
+
+			writer.flush();
+			writer.close();
+
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		}
 	}
 
 	@Override
 	public Action act(Vehicle vehicle, Task availableTask) {
+
 		Action action;
-		City currentCity = vehicle.getCurrentCity();
 		City bestCity;
-		StateAction currentState;
-		if (availableTask != null) currentState = new StateAction(currentCity, availableTask.deliveryCity);
-		else currentState = new StateAction(currentCity, null);
-		bestCity = bestAction.get(currentState);
+		City currentCity = vehicle.getCurrentCity();
+
+		if (availableTask != null) {
+			bestCity = bestAction.get(new State(currentCity, availableTask.deliveryCity));
+		} else {
+			bestCity = bestAction.get(new State(currentCity, null));
+		}
 
 		if (availableTask == null) {
 			action = new Move(bestCity);
 		} else {
-			if (bestCity.equals(availableTask.deliveryCity)) action = new Pickup(availableTask);
-			else action = new Move(bestCity);
-
+			if (bestCity.equals(availableTask.deliveryCity)) {
+				action = new Pickup(availableTask);
+			}
+			else {
+				action = new Move(bestCity);
+			}
 		}
 		
 		if (numActions >= 1) {
-			System.out.println("The total profit after "+numActions+" actions is "+myAgent.getTotalProfit()+" (average profit: "+(myAgent.getTotalProfit() / (double)numActions)+")");
+
+			System.out.println("The total profit after " + numActions + " actions is "
+								+ myAgent.getTotalReward() + " (average profit: "
+								+(myAgent.getTotalReward()/myAgent.getTotalDistance()) + ")");
+
+			writeDataToCSV("/home/iuliana/Devel/IntelligentAgents/Reactive-agents-transportation/ReactivePlots/reactiveAg"
+							+ this.myAgent.id() + this.topology + this.discount + ".csv",
+							numActions, myAgent.getTotalReward(), (myAgent.getTotalReward()/myAgent.getTotalDistance()));
+
 		}
 		numActions++;
 		

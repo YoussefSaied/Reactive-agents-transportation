@@ -5,10 +5,10 @@ import logist.topology.Topology.City;
 
 public class StateCityPair {
 
-    private final StateAction state;
+    private final State state;
     private final City city;
 
-    public StateCityPair(StateAction state, City city) {
+    public StateCityPair(State state, City city) {
         this.state = state;
         this.city = city;
     }
