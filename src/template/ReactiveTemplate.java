@@ -261,7 +261,9 @@ public class ReactiveTemplate implements ReactiveBehavior {
 
 		}
 		numActions++;
-		if (numActions>200) System.exit((int)discount);
+		if (numActions>200){
+			System.out.println("200 actions done, stopping simulation now");
+			System.exit((int)discount);}
 		
 		return action;
 	}
