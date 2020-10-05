@@ -23,7 +23,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 	private double discount;
 	private int numActions;
 	private Agent myAgent;
-	// Chanage the value here.
+	// Change the value here.
 	private static final double INIT_VALUE = -999999;
 
 	HashMap<StatePair,Double> probTransitionTable = new HashMap<StatePair,Double>();
@@ -131,11 +131,12 @@ public class ReactiveTemplate implements ReactiveBehavior {
 			steps++;
 			System.out.println(steps);
 			keepLooping = false;
-			double currentQValue = 0;
+			double currentQValue;
 			for (StateAction state : allStates) {
 				City currentCity = state.getCurrentCity();
 				City taskCity = state.getTaskCity();
 				double maxQValue = -9999;
+				currentQValue = -9999;
 				City bestActionCurrentValue = taskCity;
 
 				//Accept the task
@@ -181,7 +182,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 				stateValues.put(state,maxQValue);
 				bestAction.put(state,bestActionCurrentValue);
 //				if (eps >0.1) System.out.println(state+ "  maxQValue " + maxQValue + "   shit:  " + shit );
-				//System.out.println("Steps: "+ steps + "      eps:" + eps + "   " + keepLooping + "  maxQValue " + maxQValue + "   shit:  " + shit);
+//				System.out.println("Steps: "+ steps + "      eps:" + eps + "   " + keepLooping + "  maxQValue " + maxQValue + "   shit:  " + shit);
 			}
 //			System.out.println("Steps: "+ steps + "      maxeps:" + maxE);
 		}while (keepLooping);
@@ -192,8 +193,10 @@ public class ReactiveTemplate implements ReactiveBehavior {
 		Action action;
 		City currentCity = vehicle.getCurrentCity();
 		City bestCity;
-		if (availableTask != null) bestCity = bestAction.get(new StateAction(currentCity, availableTask.deliveryCity));
-		else bestCity = bestAction.get(new StateAction(currentCity, null));
+		StateAction currentState;
+		if (availableTask != null) currentState = new StateAction(currentCity, availableTask.deliveryCity);
+		else currentState = new StateAction(currentCity, null);
+		bestCity = bestAction.get(currentState);
 
 		if (availableTask == null) {
 			action = new Move(bestCity);
