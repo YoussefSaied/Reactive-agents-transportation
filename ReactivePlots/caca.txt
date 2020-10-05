@@ -1,0 +1,20 @@
+/usr/lib/jvm/java-13-oracle/bin/java -javaagent:/snap/intellij-idea-community/252/lib/idea_rt.jar=36339:/snap/intellij-idea-community/252/bin -Dfile.encoding=UTF-8 -classpath /home/iuliana/Devel/IntelligentAgents/Reactive-agents-transportation/out/production/Reactive-agents-transportation:/home/iuliana/Devel/IntelligentAgents/logist/logist.jar logist.LogistPlatform config/reactive.xml reactive-random
+Reading config/reactive.xml
+Reading config/settings_default.xml
+Reading config/topology/france.xml
+Reading config/agents.xml
+null
+Current city:    0
+null
+Current city:    3
+null
+Current city:    0
+null
+Current city:    3
+null
+Current city:    0
+null
+Current city:    3
+Best Action keys: [Current city:    6      task city: 5, Current city:    7      task city: 5, Current city:    8      task city: 2, Current city:    6      task city: 1, Current city:    8      task city: 6, Current city:    7      task city: 1, Current city:    3      task city: 4, Current city:    5      task city: 7, Current city:    3      task city: 7, Current city:    1      task city: 6, Current city:    5      task city: 4, Current city:    0      task city: 3, Current city:    2, Current city:    6, Current city:    3      task city: 3, Current city:    3      task city: 8, Current city:    5      task city: 6, Current city:    4, Current city:    2      task city: 2, Current city:    5      task city: 2, Current city:    8      task city: 8, Current city:    2      task city: 5, Current city:    1      task city: 5, Current city:    3      task city: 6, Current city:    6      task city: 4, Current city:    7      task city: 8, Current city:    4      task city: 2, Current city:    1      task city: 7, Current city:    0      task city: 2, Current city:    3      task city: 5, Current city:    0      task city: 4, Current city:    0      task city: 8, Current city:    1      task city: 0, Current city:    2      task city: 1, Current city:    2      task city: 3, Current city:    5      task city: 8, Current city:    6      task city: 2, Current city:    3      task city: 0, Current city:    8      task city: 7, Current city:    4      task city: 4, Current city:    4      task city: 8, Current city:    2      task city: 8, Current city:    6      task city: 7, Current city:    2      task city: 0, Current city:    4      task city: 3, Current city:    7      task city: 7, Current city:    2      task city: 4, Current city:    7      task city: 6, Current city:    5, Current city:    2      task city: 7, Current city:    3      task city: 1, Current city:    0      task city: 6, Current city:    7      task city: 2, Current city:    1      task city: 3, Current city:    4      task city: 7, Current city:    6      task city: 8, Current city:    7      task city: 4, Current city:    8      task city: 3, Current city:    8      task city: 0, Current city:    1      task city: 1, Current city:    8      task city: 1, Current city:    8      task city: 5, Current city:    7      task city: 0, Current city:    0      task city: 1, Current city:    6      task city: 3, Current city:    0      task city: 5, Current city:    3      task city: 2, Current city:    6      task city: 0, Current city:    8      task city: 4, Current city:    2      task city: 6, Current city:    0      task city: 7, Current city:    4      task city: 6, Current city:    1, Current city:    8, Current city:    1      task city: 8, Current city:    1      task city: 4, Current city:    4      task city: 1, Current city:    5      task city: 0, Current city:    7      task city: 3, Current city:    6      task city: 6, Current city:    5      task city: 5, Current city:    4      task city: 5, Current city:    1      task city: 2, Current city:    4      task city: 0, Current city:    5      task city: 3, Current city:    0      task city: 0, Current city:    7, Current city:    5      task city: 1]
+
+Process finished with exit code 0

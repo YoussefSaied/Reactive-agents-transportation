@@ -3,10 +3,10 @@ package template;
 
 public class StatePair {
 
-    private final StateAction state1;
-    private final StateAction state2;
+    private final State state1;
+    private final State state2;
 
-    public StatePair(StateAction state1, StateAction state2) {
+    public StatePair(State state1, State state2) {
         this.state1 = state1;
         this.state2 = state2;
     }

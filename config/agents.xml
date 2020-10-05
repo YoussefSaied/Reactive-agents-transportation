@@ -4,10 +4,46 @@
 	<!-- A list of agents and their behavior classes -->
 	
 	<!-- #### REACTIVE AGENTS ### -->
-	<agent name="reactive-random">
+	<agent name="reactive-random1">
 		<set class-path="bin/"/>
-		<set class-name="template.ReactiveTemplate"/>
-		<set discount-factor=".85"/>
+		<set class-name="template.ReactiveTemplateDummy1"/>
+		<set discount-factor=".57"/>
 	</agent>
+
+	<agent name="reactive-random2">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveTemplateDummy1"/>
+		<set discount-factor=".65"/>
+	</agent>
+
+	<agent name="reactive-random3">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveTemplateDummy1"/>
+		<set discount-factor=".75"/>
+	</agent>
+
+	<agent name="reactive-random4">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveTemplateDummy1"/>
+		<set discount-factor=".86"/>
+	</agent>
+
+	<agent name="reactive-random5">
+		<set class-path="bin/"/>
+		<set class-name="template.ReactiveTemplateDummy1"/>
+		<set discount-factor=".98"/>
+	</agent>
+
+<!--	<agent name="reactive-random2">-->
+<!--		<set class-path="bin/"/>-->
+<!--		<set class-name="template.ReactiveTemplate"/>-->
+<!--		<set discount-factor=".5"/>-->
+<!--	</agent>-->
+
+<!--	<agent name="reactive-random3">-->
+<!--		<set class-path="bin/"/>-->
+<!--		<set class-name="template.ReactiveTemplate"/>-->
+<!--		<set discount-factor=".25"/>-->
+<!--	</agent>-->
 	
 </agents>

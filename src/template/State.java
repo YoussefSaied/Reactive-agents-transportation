@@ -3,12 +3,12 @@ package template;
 import logist.topology.Topology.City;
 
 
-public class StateAction {
+public class State {
 
     private City currentCity;
     private City taskCity;
 
-    public StateAction(City givenCurrentCity, City taskCity) {
+    public State(City givenCurrentCity, City taskCity) {
         this.currentCity = givenCurrentCity;
         this.taskCity = taskCity;
     }
@@ -52,7 +52,7 @@ public class StateAction {
 
         if (getClass() != obj.getClass()) return false;
 
-        StateAction other = (StateAction) obj;
+        State other = (State) obj;
         if (currentCity == null) {
             if (other.currentCity != null) {
                 return false;
