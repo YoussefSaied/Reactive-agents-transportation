@@ -133,11 +133,12 @@ public class ReactiveTemplate implements ReactiveBehavior {
 			maxEpsilon = 0;
 			keepLooping = false;
 
-			double currentQValue = 0;
+			double currentQValue;
 
 			for (State state: allStates) {
 				City currentCity = state.getCurrentCity();
 				City taskCity = state.getTaskCity();
+				currentQValue = -9999999;
 				double maxQValue = -999999;
 				City bestActionCurrentValue = taskCity;
 
@@ -228,26 +229,25 @@ public class ReactiveTemplate implements ReactiveBehavior {
 	@Override
 	public Action act(Vehicle vehicle, Task availableTask) {
 
-		Action action;
-		City bestCity;
-		City currentCity = vehicle.getCurrentCity();
 
-		if (availableTask != null) {
-			bestCity = bestAction.get(new State(currentCity, availableTask.deliveryCity));
-		} else {
-			bestCity = bestAction.get(new State(currentCity, null));
-		}
+		Action action;
+		City currentCity = vehicle.getCurrentCity();
+		City bestCity;
+		State currentState;
+
+		if (availableTask != null) currentState = new State(currentCity, availableTask.deliveryCity);
+		else currentState = new State(currentCity, null);
+		bestCity = bestAction.get(currentState);
 
 		if (availableTask == null) {
 			action = new Move(bestCity);
 		} else {
-			if (bestCity.equals(availableTask.deliveryCity)) {
-				action = new Pickup(availableTask);
-			}
-			else {
-				action = new Move(bestCity);
-			}
+			if (bestCity.equals(availableTask.deliveryCity)) action = new Pickup(availableTask);
+			else action = new Move(bestCity);
+
 		}
+
+
 		
 		if (numActions >= 1) {
 
@@ -261,6 +261,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 
 		}
 		numActions++;
+		if (numActions>200) System.exit((int)discount);
 		
 		return action;
 	}
