@@ -29,15 +29,18 @@ public class StateCityPair {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
+
         if (!(o instanceof StateCityPair)) return false;
+
         StateCityPair key = (StateCityPair) o;
+
         boolean cityBool = false;
-        if (key.city == null){
+        if (key.city == null) {
             if (city != null) return false;
             else {
                 cityBool = true;
             }
-        }else {
+        } else {
             cityBool = city.equals(key.city);
         }
         boolean stateBool = state.equals(key.state);

@@ -32,18 +32,5 @@ public class StatePair {
         if (!(o instanceof StatePair)) return false;
         StatePair key = (StatePair) o;
         return state1.equals(key.state1) && state2.equals(key.state2);
-
-//        boolean cityBool = false;
-//        if (key.city == null){
-//            if (city != null) return false;
-//            else {
-//                cityBool = true;
-//            }
-//        }else {
-//            cityBool = city.equals(key.city);
-//        }
-//        boolean stateBool = state.equals(key.state);
-//
-//        return stateBool && cityBool;
     }
 }

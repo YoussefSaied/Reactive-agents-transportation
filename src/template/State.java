@@ -17,7 +17,7 @@ public class State {
         return currentCity;
     }
 
-    public void setCurrentCity(City currentCity) {
+    public void setCurrentCity (City currentCity) {
         this.currentCity = currentCity;
     }
 
@@ -48,7 +48,6 @@ public class State {
     public boolean equals(Object obj) {
         if (this == obj) return true;
 
-//        if (obj == null) return false;
 
         if (getClass() != obj.getClass()) return false;
 
@@ -57,14 +56,14 @@ public class State {
             if (other.currentCity != null) {
                 return false;
             }
-        } else if (currentCity.id != other.currentCity.id) // (!currentCity.equals(other.currentCity))
+        } else if (currentCity.id != other.currentCity.id)
             return false;
 
         if (taskCity == null) {
             if (other.taskCity != null) {
                 return false;
             }
-        } else if (taskCity.id != other.taskCity.id) // (!taskCity.equals(other.taskCity))
+        } else if (taskCity.id != other.taskCity.id)
             return false;
         return true;
     }
