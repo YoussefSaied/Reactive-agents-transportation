@@ -61,7 +61,7 @@ public class ReactiveTemplateDummy1 implements ReactiveBehavior {
 
 	@Override
 	public Action act(Vehicle vehicle, Task availableTask) {
-		System.out.println("It works well!");
+
 		Action action;
 
 		if (availableTask == null || random.nextDouble() > pPickup) {
@@ -72,14 +72,13 @@ public class ReactiveTemplateDummy1 implements ReactiveBehavior {
 		}
 		
 		if (numActions >= 1) {
-//			System.out.println("The total profit after "+numActions+" actions is "+myAgent.getTotalProfit()+" (average profit: "+(myAgent.getTotalProfit() / (double)numActions)+")");
 			System.out.println("The total profit after " + numActions + " actions is "
 					+ myAgent.getTotalReward() + " (average profit: "
 					+ (myAgent.getTotalReward()/myAgent.getTotalDistance()) + ")");
 
-			writeDataToCSV("/home/iuliana/Devel/IntelligentAgents/Reactive-agents-transportation/ReactivePlots/reactiveAg"
-					+ this.myAgent.id() + this.topology + "Dummy1" + this.discount + ".csv", numActions, myAgent.getTotalReward(),
-					(myAgent.getTotalReward()/myAgent.getTotalDistance()));
+//			writeDataToCSV("/home/iuliana/Devel/IntelligentAgents/Reactive-agents-transportation/ReactivePlots/reactiveAg"
+//					+ this.myAgent.id() + this.topology + "Dummy1" + this.discount + ".csv", numActions, myAgent.getTotalReward(),
+//					(myAgent.getTotalReward()/myAgent.getTotalDistance()));
 		}
 		numActions++;
 		

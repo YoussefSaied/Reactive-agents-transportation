@@ -61,7 +61,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 			stateValues.put(noTaskCurrentState, INIT_VALUE);
 
 			for (City neighbour: currentCityNeighbours) {
-				reward = 0 - currentCity.distanceTo(neighbour)*agent.vehicles().get(0).costPerKm();
+				reward = 0 - currentCity.distanceTo(neighbour) * agent.vehicles().get(0).costPerKm();
 				StateCityPair neighbourStateNoTaskStateCityPair = new StateCityPair(noTaskCurrentState, neighbour);
 				rewardTable.put(neighbourStateNoTaskStateCityPair, reward);
 
@@ -95,7 +95,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 						probTransitionTable.put(neighbourStateNoTaskStatePair, td.probability(neighbour, null));
 						stateValues.put(neighbourStateNoTask, INIT_VALUE);
 
-						reward = 0 -currentCity.distanceTo(neighbour)*agent.vehicles().get(0).costPerKm() ;
+						reward = 0 -currentCity.distanceTo(neighbour) * agent.vehicles().get(0).costPerKm();
 						StateCityPair neighbourStateNoTaskStateCityPair = new StateCityPair(currentState, neighbour);
 						rewardTable.put(neighbourStateNoTaskStateCityPair, reward);
 
@@ -108,7 +108,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 				}
 
 				// Case 2b: accept the task.
-				reward = td.reward(currentCity, taskCity) - currentCity.distanceTo(taskCity)*agent.vehicles().get(0).costPerKm();
+				reward = td.reward(currentCity, taskCity) - currentCity.distanceTo(taskCity) * agent.vehicles().get(0).costPerKm();
 				StateCityPair taskStateStateCityPair = new StateCityPair(currentState, taskCity);
 				rewardTable.put(taskStateStateCityPair, reward);
 
@@ -148,7 +148,6 @@ public class ReactiveTemplate implements ReactiveBehavior {
 					if (!(neighbour.equals(taskCity))) {
 						StateCityPair currentStateNeighbourCityPair = new StateCityPair(state, neighbour);
 						currentQValue = rewardTable.get(currentStateNeighbourCityPair);
-//						if(rewardTable.get(currentStateNeighbourCityPair) == null) System.out.println("OOOOFFFF");
 
 						for (City destinationCityForNeighbourCity : cities) {
 							State destinationState = new State(neighbour, destinationCityForNeighbourCity);
@@ -182,7 +181,7 @@ public class ReactiveTemplate implements ReactiveBehavior {
 				}
 
 				if (stateValues.get(state) != 0 && (maxQValue > stateValues.get(state))) {
-					epsilon = Math.abs((maxQValue - stateValues.get(state))/stateValues.get(state));
+					epsilon = Math.abs((maxQValue - stateValues.get(state)) / stateValues.get(state));
 				} else {
 					epsilon = 0;
 				}
@@ -201,8 +200,6 @@ public class ReactiveTemplate implements ReactiveBehavior {
 				}
 			}
 		} while (keepLooping);
-
-		System.out.println(bestAction.keySet());
 	}
 
 	public void writeDataToCSV(String csvFile, int dataItem1, long dataItem2, double dataItem3) {
@@ -229,7 +226,6 @@ public class ReactiveTemplate implements ReactiveBehavior {
 	@Override
 	public Action act(Vehicle vehicle, Task availableTask) {
 
-
 		Action action;
 		City currentCity = vehicle.getCurrentCity();
 		City bestCity;
@@ -246,24 +242,18 @@ public class ReactiveTemplate implements ReactiveBehavior {
 			else action = new Move(bestCity);
 
 		}
-
-
 		
 		if (numActions >= 1) {
 
 			System.out.println("The total profit after " + numActions + " actions is "
 								+ myAgent.getTotalReward() + " (average profit: "
-								+(myAgent.getTotalReward()/myAgent.getTotalDistance()) + ")");
+								+ (myAgent.getTotalReward()/myAgent.getTotalDistance()) + ")");
 
-			writeDataToCSV("/home/iuliana/Devel/IntelligentAgents/Reactive-agents-transportation/ReactivePlots/reactiveAg"
-							+ this.myAgent.id() + this.topology + this.discount + ".csv",
-							numActions, myAgent.getTotalReward(), (myAgent.getTotalReward()/myAgent.getTotalDistance()));
-
+//			writeDataToCSV("/home/iuliana/Devel/IntelligentAgents/Reactive-agents-transportation/ReactivePlots/reactiveAg"
+//							+ this.myAgent.id() + this.topology + this.discount + ".csv",
+//							numActions, myAgent.getTotalReward(), (myAgent.getTotalReward()/myAgent.getTotalDistance()));
 		}
 		numActions++;
-		if (numActions>200){
-			System.out.println("200 actions done, stopping simulation now");
-			System.exit((int)discount);}
 		
 		return action;
 	}
